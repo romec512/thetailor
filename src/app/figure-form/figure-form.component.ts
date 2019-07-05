@@ -24,9 +24,11 @@ export class FigureFormComponent implements OnInit, OnDestroy {
     calculated = false;
     packer: Packer;
     substrateHeight = 0;
+    windowWidth = 1000;
     constructor(private componentFactoryResolver: ComponentFactoryResolver, private formBuilder: FormBuilder,
                 private share: ShareService) { }
     ngOnInit() {
+        this.windowWidth = window.innerWidth;
         this.checkOutForm = this.formBuilder.group({
             number: 1,
             width: null,
@@ -54,6 +56,7 @@ export class FigureFormComponent implements OnInit, OnDestroy {
         this.loadComponent();
     }
     onSubmit(data) {
+        // ToDo присваивать номера по другому принципу, а не по длине
         if (data.width && data.height && data.count) {
             let newFig = new Figure();
             newFig.loadItem(data);
@@ -74,6 +77,8 @@ export class FigureFormComponent implements OnInit, OnDestroy {
         });
     }
     calculate(data) {
+        this.resizeCanvas();
+        this.clearCanvas();
         const sofaCount = data.count;
         this.packer = new Packer();
         let count = 0;
@@ -91,18 +96,35 @@ export class FigureFormComponent implements OnInit, OnDestroy {
         this.share.setFigures(this.figures);
         this.calculated = true;
     }
-    clearCanvas() {
+    private clearCanvas() {
         let canvas: any = document.getElementById('test');
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.calculated = false;
+    }
+    private clearFiguresForm() {
         this.figures = [];
         this.checkOutForm = this.formBuilder.group({
-            number: null,
+            number: 1,
             width: null,
             height: null,
             count: null
         });
         this.calculated = false;
+    }
+    clearAll() {
+        this.clearCanvas();
+        this.clearFiguresForm();
+    }
+    resizeCanvas() {
+        let canvas: any = document.getElementById('test');
+        var ctx = canvas.getContext('2d');
+        ctx.canvas.width = this.windowWidth - 20;
+    }
+    redrawReducedFigures(figures, packer) {
+        _.forEach(figures, function(figure){
+            packer.draw
+        });
     }
     setSubstrateHeight(data) {
         if (data.height) {
